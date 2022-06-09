@@ -1,6 +1,6 @@
 use std::net::TcpListener;
 
-use sqlx::{PgPool, PgConnection, Connection, Executor};
+use sqlx::{Connection, Executor, PgConnection, PgPool};
 use uuid::Uuid;
 use zero2prod::configuration::{get_configuration, DatabaseSettings};
 
@@ -36,9 +36,15 @@ pub async fn configure_isolated_database(configuration: &DatabaseSettings) -> Pg
         .expect("Failed to connect to Postgres");
 
     connection
-        .execute(format!(r#"
+        .execute(
+            format!(
+                r#"
             create database "{}";
-        "#, configuration.database_name).as_str())
+        "#,
+                configuration.database_name
+            )
+            .as_str(),
+        )
         .await
         .expect("Failed to create test database.");
 
